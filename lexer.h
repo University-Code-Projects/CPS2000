@@ -1,66 +1,69 @@
 //
-// Created by jonathan on 01/03/2016.
+// Created by jonathan on 02/03/2016.
 //
-/*
- * Header file used to read char from file and sort into tokens respectively
- */
-#ifndef LEXER_PROJ1_LEXER_H
-#define LEXER_PROJ1_LEXER_H
 
-using namespace std;
+#ifndef LEXER_PROJ2_LEXER_H
+#define LEXER_PROJ2_LEXER_H
+
 #include <string>
 #include <fstream>
 #include <iostream>
+using namespace std;
 
-class Lexer{
-    public:
-        /*
-         * Constructor, opens file given by filename
-         *  program exists with an error message if file does not exist.
-         *  @param filename - a C string naming the fle to read
-         */
-        Lexer(const string&);
+class Lexer {
+public:
+    /*
+     * Constructor
+     */
+    Lexer(string p_filename);
 
-        virtual ~Lexer();
+    /*
+     * Deconstuctor
+     */
+    virtual ~Lexer();
 
+    enum Tok_Type { tok_eof = -1, tok_extern = -2, tok_def = -3, tok_number = -4, tok_identifier = -5,};
+    //struct Token{
+    //    Tok_Type token_type;
+    //    string id;
+    //    double num;
 
+        //Token(){
+        //    token_type = tok_eof;
+        //    id = "";
+        //    num = 0;
+        //}
 
+    //};
 
-        Token(const string&);
+    /*
+     * struct Token{
+            enum TOK_TYPE{TOK_EOF =-1, TOK_NUMBER=-2, TOK_ARITHOP = -3, TOK_BOOLOP =-4};
 
-        /*
-         * Closes the file opened
-         */
-        void close();
+            if(token_type = file.eof()){
 
-        /*
-         * Returns the next line for the file
-         * @return - string - line
-         */
-        string getNextLine();
+            }else if(){
 
-        /*
-         * Returns a string, being the next word from the line
-         * @return - string - next word.
-         */
-        string getNextString();
+            }else if(){
 
-        /*
-         * Returns true if there is more lines in file, else false if EOF is reached
-         * @return - bool - !eof
-         */
-        bool isNextLine();
+            }
+            //string float token_type
+        };
+        */
 
-        /*
-         * Returns true if the next string is a whitespace, newline or a tab
-         */
-    //to create a new function
+        string getLine();
+
+        //Token getToken();
+
+        int getToken();
 
     private:
-        ifstream filevar;
-        bool eoffound;
-        string nextline;
-        string nexttoken;
-
+        ifstream file;
+        //Token token_type;
+        string identifierStr;
+        double num;
 };
-#endif //LEXER_PROJ1_LEXER_H
+
+
+
+#endif //LEXER_PROJ2_LEXER_H

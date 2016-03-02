@@ -1,123 +1,102 @@
 //
-// Created by Jonathan Borg on 01/03/2016.
+// Created by jonathan on 02/03/2016.
 //
-#include "lexer.h"
-
+#include "Lexer.h"
 /*
- * Constructor, opens file with the given filename.
- * program exists with an error message if file does not exist.
- *  @param filename - a C string naming the fle to read
- *  After successful open the constuctor reads the first of the strings and initialises eoffound flag
+ * Constructor, exit if file is not unacceptable
  */
-Lexer::Lexer(const string &filein){
-    filevar.open("C:\\Users\\jonathan\\ClionProjects\\Lexer_proj1\\test.txt");//open file given by user
-    if(filevar){
-        cout << "File '" << filein << "' was opened successfully." << endl;
-        //filevar >> nextstring;
-        eoffound = false;
+Lexer::Lexer(string p_filename) {
+    file.open(p_filename);
+    if(file){
+        cout << "File '" << p_filename << "' was opened successfully." << endl;
+
+
+    }else{
+        cout << "File '" << p_filename << "' could no be opened." << endl;
     }
-    if(!filevar){
-        cout << "File '" << filein << "' cannot be opened." << endl;
-        //exit(1);
-    }
-
-}
-
-/*
- * Closing the file
- */
-void Lexer::close(){
-    filevar.close();
-    cout << "File was closed" << endl;
-}
-
-/*
- * Returns the next line for the file
- * @return - string - line
- */
-string Lexer::getNextLine(){
-    getline(filevar, nextline);
-    if(filevar.eof())
-        eoffound = true;
-    return nextline;
-}
-
-/*
- * Returns a string, being the next word from the file
- * @return - string - next word.
- */
-/*
- *
-
-string Lexer::getNextString(){
-    string line = nextline;
-    int len =line.size();
-    string curr = "";
-
-    bool t = false;
-    for(int i=0; i <= len; i++){
-        if(line[i] == ' '){
-            cout << "Word from get function: " <<curr << endl;
-            return curr;
-            continue;
-        }else if(line[i] == '\n') {
-
-        }else{
-            curr += line[i];
-        }
-    }
-
-}
-
-*/
-string Lexer::getNextString(){
-    string line = nextline;
-    int len = line.size();
-    string curr = "";
-
-    bool t = false;
-    for(int i=0; i <=len; i++){
-        if(line[i] == '\n'){
-            cout <<"endline found" << endl;
-            break;
-        }
-        if(t == true){
-            curr = "";
-            continue;
-        }
-        if(line[i] == ' '){
-            cout << "space found.... new token inc" << endl;
-            cout << "Word from get func: " << curr << endl;
-            t = true;
-        }
-        curr += line[i];
-
-    }
-
-}
-
-
-/*
- * Returns a string, being the next word from the line
- * @return - string - next word.
-
-string getNextToken(){
-    string tok;
-    return tok;
-}
-*/
-/*
- * Returns true if there is more in file, else false if EOF is reached
- * @return - bool - !eof
- */
-bool Lexer::isNextLine(){
-    return !eoffound;
-}
-
-Lexer::Token(const string &string1) {
-    return 0;
 }
 
 Lexer::~Lexer() {
+    cout << "Object was deconstructed" << endl;
+}
+
+string Lexer::getLine() {
 
 }
+
+//Lexer::Token Lexer::getToken() {
+    //if((unsigned int) a_charIndex == a_inputProgram.length()-1 return Lexer::Token(TOK_EOF));
+
+
+//}
+
+int Lexer::getToken() {
+    int LastChar = ' ';
+
+    while(isspace(LastChar)){//skipping any whitespaces
+        LastChar = getchar();
+    }
+    if(isalpha(LastChar)){//used to identifiers
+        identifierStr = LastChar;
+        while(isalnum((LastChar = getchar()))){
+            identifierStr += LastChar;
+        }
+
+        if(identifierStr == "def")
+            return tok_def;
+        if(identifierStr == "extern")
+            return tok_extern;
+        cout << "Returning identifier" << endl;
+        return tok_identifier;
+    }
+    //for double
+    if(isdigit(LastChar)|| LastChar == '.'){//can be a 0.___ thus the lastchar =='.'
+        string curr;
+        do{
+            curr += LastChar;
+            LastChar = getchar();
+        }while(isdigit(LastChar)||LastChar == '.');
+
+        num = strtod(curr.c_str(),0);
+        cout <<"Returning Number" << endl;
+        return tok_number;
+    }
+
+    if(LastChar == EOF){//for eof
+        cout <<"Returning EOF" << endl;
+        return tok_eof;
+    }
+
+    if(LastChar == '/'){//for comments
+        string comm;
+        int i =0;
+        bool flag= false;
+        comm += LastChar;
+        do{
+            i++;
+            LastChar = getchar();
+            if(i==2) {
+                if (LastChar == '/') {
+                    comm += LastChar;
+                    flag = true;// can be removed, kept if want to do something with comment
+
+                }else{
+                    // only the 1st char was a /
+                    break;
+                }
+            }
+            comm += LastChar;
+        }while(LastChar != EOF && LastChar != '\n' && LastChar != '\r');
+
+        if(LastChar != EOF){
+            return getToken();
+        }
+    }
+    int charac = LastChar;
+    LastChar = getchar();
+    cout << "Returning char: " << charac << endl;
+    return charac;
+
+
+}
+
