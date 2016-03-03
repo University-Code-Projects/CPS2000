@@ -20,16 +20,48 @@ Lexer::~Lexer() {
     cout << "Object was deconstructed" << endl;
 }
 
-string Lexer::getLine() {
+string Lexer::getProgramToText() {
+    cout << "Entry in program to text function" << endl;
+    string currentLine = "";
+    string toStore = "";
+    inputText = "";//initializing the private var that stores the entire project as a string/char
+    bool eoffound = false;
 
+    while(getline(file, currentLine)){
+        //getline(file, currentLine);
+        if(file.eof()) {
+            eoffound = true;
+            //break;
+        }
+
+        if(eoffound == true){
+            break;
+        }
+        if(eoffound == false){
+            int size = currentLine.length();
+            int curr=0;
+            //for (int i=0; i <size; i++){
+                curr++;
+                if(curr < size-1){
+                    inputText += currentLine;
+                }
+
+                if((currentLine.length()-1) == '\n' || '\r'|| '\t') {
+                    inputText += ' ';
+                }
+            //}
+
+        }
+    }
+    return inputText;
 }
 
 //Lexer::Token Lexer::getToken() {
-    //if((unsigned int) a_charIndex == a_inputProgram.length()-1 return Lexer::Token(TOK_EOF));
-
-
+    //if((unsigned int) a_charIndex == a_inputProgram.length()-1)
+    //   return Lexer::Token(tok_eof));
+    //char LastChar = a_inputProgram[a_charIndex];
 //}
-
+/*
 int Lexer::getToken() {
     int LastChar = ' ';
 
@@ -99,4 +131,4 @@ int Lexer::getToken() {
 
 
 }
-
+*/

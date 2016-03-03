@@ -6,6 +6,7 @@
 #define LEXER_PROJ2_LEXER_H
 
 #include <string>
+#include <string.h>
 #include <fstream>
 #include <iostream>
 using namespace std;
@@ -22,19 +23,28 @@ public:
      */
     virtual ~Lexer();
 
-    enum Tok_Type { tok_eof = -1, tok_extern = -2, tok_def = -3, tok_number = -4, tok_identifier = -5,};
-    //struct Token{
-    //    Tok_Type token_type;
-    //    string id;
-    //    double num;
+    /*
+     * All possible token types and their associated value.
+     */
+    enum TOK_Type { tok_eof = -1, tok_extern = -2, tok_def = -3, tok_number = -4, tok_identifier = -5,};
 
-        //Token(){
-        //    token_type = tok_eof;
-        //    id = "";
-        //    num = 0;
-        //}
+    struct Token{
+        TOK_Type token_type;
+        string id;
+        float num;
 
-    //};
+        Token(){
+            token_type = tok_eof;
+            id = '"';
+            num = 0;
+        }
+
+        Token(TOK_Type p_type, string p_id, float p_num ){
+            token_type = p_type;
+            id = p_id;
+            num = p_num;
+        }
+    };
 
     /*
      * struct Token{
@@ -51,17 +61,27 @@ public:
         };
         */
 
-        string getLine();
+        string getProgramToText();
 
-        //Token getToken();
+        /*
+         * Get token impemented using Token type
+         */
+        Token getToken();
 
-        int getToken();
+        /*
+        * Get token implemented using int
+        */
+        //int getToken();
 
     private:
         ifstream file;
         //Token token_type;
-        string identifierStr;
-        double num;
+        //string identifierStr;
+        //float num;
+        int charIndex;
+        string inputText;
+
+
 };
 
 

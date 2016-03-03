@@ -6,12 +6,14 @@ using namespace std;
 int main() {
     cout << "Entry in Main" << endl;
     Lexer *lex = new Lexer("C:\\Users\\jonathan\\ClionProjects\\Lexer_proj1\\test.txt");
-    int nextToken = lex->getToken();
+    string total = lex->getProgramToText();
+    cout << total << endl;
+    //int nextToken = lex->getToken();
 
-    //Lexer::Token nextToken = lex->getToken();
-//    while (nextToken.token_type != Lexer::TOK_EOF){
+//    Lexer nextToken = lex->getToken();
+//    while (nextToken.TOK_type != Lexer::tok_eof){
 
- //   }
+   // }
     return 0;
 }
 
