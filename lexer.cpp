@@ -23,44 +23,139 @@ Lexer::~Lexer() {
 string Lexer::getProgramToText() {
     cout << "Entry in program to text function" << endl;
     string currentLine = "";
-    string toStore = "";
     inputText = "";//initializing the private var that stores the entire project as a string/char
+    charIndex = 0;
     bool eoffound = false;
 
     while(getline(file, currentLine)){
-        //getline(file, currentLine);
         if(file.eof()) {
             eoffound = true;
-            //break;
+            break;
         }
-
         if(eoffound == true){
             break;
         }
         if(eoffound == false){
             int size = currentLine.length();
             int curr=0;
-            //for (int i=0; i <size; i++){
-                curr++;
-                if(curr < size-1){
-                    inputText += currentLine;
-                }
-
-                if((currentLine.length()-1) == '\n' || '\r'|| '\t') {
-                    inputText += ' ';
-                }
-            //}
-
+            curr++;
+            if(curr < size-1){
+                inputText += currentLine;
+            }
+            if((currentLine.length()-1) == '\n' || '\r'|| '\t') {
+                inputText += ' ';
+            }
         }
     }
+    cout << "Exit from text function " << endl;
     return inputText;
 }
 
-//Lexer::Token Lexer::getToken() {
-    //if((unsigned int) a_charIndex == a_inputProgram.length()-1)
-    //   return Lexer::Token(tok_eof));
-    //char LastChar = a_inputProgram[a_charIndex];
-//}
+Lexer::Token Lexer::getToken() {
+    char lastChar;
+
+    if((unsigned int) charIndex == inputText.length() - 1) {
+
+        cout << "Returning an EOF token" << endl;
+        return (Lexer::Token(tok_eof,"End of File",-1));//not sure about the id to be stored
+        //return (Lexer::Token(tok_eof));
+    }
+
+    lastChar = inputText[charIndex];
+
+    while(charIndex != inputText.length()-1){
+
+        while(isspace(lastChar)){//skipping any whitespaces
+            charIndex++;
+            lastChar = inputText[charIndex];
+        }
+
+        if (isdigit(lastChar) || lastChar == '.'){//in the case of a floating number example 0.__
+            string curr;
+            //string::size_type sz;
+            //float toStoreNum;
+
+            do{
+                curr += lastChar;
+                charIndex++;
+                lastChar = inputText[charIndex];
+            }while(isdigit(lastChar)||lastChar == '.');
+
+            //toStoreNum = stof(curr, &sz);
+            return (Lexer::Token(tok_number,curr,-4));//not sure about the id which will be stored in the structure
+        }
+
+        if(isalpha(lastChar)){//used to identifiers
+            string word = "";
+            //word += lastChar;
+
+            while(isalnum((lastChar = inputText[charIndex]))){
+                word += lastChar;
+                charIndex++;
+                lastChar = inputText[charIndex];
+            }
+
+            if(word == "def"){
+                return Lexer::Token(tok_def, word,-3);//to change , uncertain about this result(id and num)
+            }else if(word == "extern") {
+                return Lexer::Token(tok_extern, word, -2);//to change , uncertain about this result
+            }else{
+                return Lexer::Token(tok_identifier, word, -5);//to change , uncertain about this result(num)
+            }
+
+        }
+
+        if(lastChar == '/'){//for comments
+            string comm = "";
+            int i =0;
+            bool flag= false, integ=false;
+            do{
+                i++;
+                comm += lastChar;
+                charIndex++;
+                lastChar = inputText[charIndex];;
+                if(i==2) {
+                    if (lastChar == '/') {
+                        comm += lastChar;
+                        flag = true;// can be removed, kept if want to do something with comment
+
+                    }else{
+                        // only the 1st char was a /
+                        if(isdigit(lastChar)){
+                            integ = true;
+                        }
+                        break;
+
+                    }
+                }
+                comm += lastChar;
+            }while(lastChar != EOF && lastChar != '\n' && lastChar != '\r');
+
+            if(integ == true){
+                //value after / was a number .... do something with it (division)
+            }
+
+            //cout <<"Returning Comment: " << comm << endl;
+            return Lexer::Token(tok_comment,comm,-6);//uncertain about num for this case
+            //if(lastChar != EOF){
+            //    return getToken();
+            //}
+        }
+
+        if(lastChar == '+' || '-' ||'*' ||'/'){
+            string oper= "";
+            oper += lastChar;
+            charIndex++;
+            lastChar = inputText[charIndex];
+            return (Lexer::Token(tok_arithop,oper,-7));   //not sure about the num return
+        }
+        //charIndex++;
+        //lastChar = inputText[charIndex];
+
+
+    }
+}
+
 /*
 int Lexer::getToken() {
     int LastChar = ' ';

@@ -10,10 +10,50 @@ int main() {
     cout << total << endl;
     //int nextToken = lex->getToken();
 
-//    Lexer nextToken = lex->getToken();
-//    while (nextToken.TOK_type != Lexer::tok_eof){
+    Lexer::Token nextToken = lex->getToken();
+    /*
+    if(nextToken.id == ""){
+        cout << "**NextToken Int: " << nextToken.num << endl;
+    }else if(nextToken.num == 0){
+        cout << "**NextToken string: " << nextToken.id<<endl;
+    }
 
-   // }
+    nextToken = lex->getToken();
+    if(nextToken.id == ""){
+        cout << "**NextToken Int: " << nextToken.num << endl;
+    }else if(nextToken.num == 0){
+        cout << "**NextToken string: " << nextToken.id<<endl;
+    }
+
+    nextToken = lex->getToken();
+    if(nextToken.id == ""){
+        cout << "**NextToken Int: " << nextToken.num << endl;
+    }else if(nextToken.num == 0){
+        cout << "**NextToken string: " << nextToken.id<<endl;
+    }
+    nextToken = lex->getToken();
+    if(nextToken.id == ""){
+        cout << "**NextToken Int: " << nextToken.num << endl;
+    }else if(nextToken.num == 0){
+        cout << "**NextToken string: " << nextToken.id<<endl;
+    }
+     */
+    //cout << "NextToken string: " << nextToken.id<<endl;
+    //cout << "NextToken Int:" << nextToken.num << endl;
+    //cout << "Pre entry in while" << endl;
+
+    while(nextToken.token_type != Lexer::tok_eof){
+        //cout << nextToken.num << "";
+        if(nextToken.id == ""){
+            cout << "**NextToken Int   : " << nextToken.num << endl;
+        }else if(nextToken.num == 0){
+            cout << "**NextToken string: " << nextToken.id<<endl;
+        }
+
+        nextToken = lex->getToken();
+    }
+
+    //cout <<"Post exit of while" << endl;
     return 0;
 }
 

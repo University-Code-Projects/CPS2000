@@ -26,12 +26,13 @@ public:
     /*
      * All possible token types and their associated value.
      */
-    enum TOK_Type { tok_eof = -1, tok_extern = -2, tok_def = -3, tok_number = -4, tok_identifier = -5,};
+    enum TOK_Type { tok_eof = -1, tok_extern = -2, tok_def = -3, tok_number = -4, tok_identifier = -5,tok_comment =-6, tok_arithop=-7};
 
     struct Token{
         TOK_Type token_type;
-        string id;
-        float num;
+        string id;//check what we have to store
+        float num;//check what we have to store
+
 
         Token(){
             token_type = tok_eof;
