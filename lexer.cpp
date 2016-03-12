@@ -32,9 +32,6 @@ string Lexer::getProgramToText() {
             eoffound = true;
             break;
         }
-        if(eoffound == true){
-            break;
-        }
         if(eoffound == false){
             int size = currentLine.length();
             int curr=0;
@@ -42,38 +39,46 @@ string Lexer::getProgramToText() {
             if(curr < size-1){
                 inputText += currentLine;
             }
-            if((currentLine.length()-1) == '\n' || '\r'|| '\t') {
+            if((currentLine.length()-1) ==  '\r'|| '\t') {
                 inputText += ' ';
             }
+            if(file.peek() != EOF){
+                inputText += '\n';
+
+            }else{
+                break;
+            }
         }
+
     }
-    cout << "Exit from text function " << endl;
+    //cout << "Length of Text: " << inputText.length()<<endl;
     return inputText;
 }
 
 Lexer::Token Lexer::getToken() {
     char lastChar;
-
     if((unsigned int) charIndex == inputText.length() - 1) {
-
-        cout << "Returning an EOF token" << endl;
-        return (Lexer::Token(tok_eof,"End of File",-1));//not sure about the id to be stored
+        //cout << "Returning an EOF token" << endl;
+        return (Lexer::Token());//not sure about the id to be stored
         //return (Lexer::Token(tok_eof));
     }
-
     lastChar = inputText[charIndex];
 
     while(charIndex != inputText.length()-1){
 
-        while(isspace(lastChar)){//skipping any whitespaces
+        while((isspace(lastChar)||lastChar=='\n') && lastChar != EOF){//skipping any whitespaces
             charIndex++;
             lastChar = inputText[charIndex];
         }
 
+        if(lastChar == EOF){
+            return (Lexer::Token());
+        }
+
         if (isdigit(lastChar) || lastChar == '.'){//in the case of a floating number example 0.__
             string curr;
-            //string::size_type sz;
-            //float toStoreNum;
+            string::size_type sz;
+            float toStoreNum;
 
             do{
                 curr += lastChar;
@@ -81,79 +86,198 @@ Lexer::Token Lexer::getToken() {
                 lastChar = inputText[charIndex];
             }while(isdigit(lastChar)||lastChar == '.');
 
-            //toStoreNum = stof(curr, &sz);
-            return (Lexer::Token(tok_number,curr,-4));//not sure about the id which will be stored in the structure
+            toStoreNum = stof(curr, &sz);
+            return (Lexer::Token(TOK_number,toStoreNum));//not sure about the id which will be stored in the structure
         }
 
-        if(isalpha(lastChar)){//used to identifiers
+        if(isalpha(lastChar)){//used get strings
             string word = "";
-            //word += lastChar;
 
             while(isalnum((lastChar = inputText[charIndex]))){
                 word += lastChar;
                 charIndex++;
                 lastChar = inputText[charIndex];
+                /*
+                if((lastChar == '_')||(lastChar == '(')||(lastChar == ')')){
+                    word += lastChar;
+                    charIndex++;
+                }
+                 */
             }
 
             if(word == "def"){
-                return Lexer::Token(tok_def, word,-3);//to change , uncertain about this result(id and num)
+                return Lexer::Token(TOK_def, word);
             }else if(word == "extern") {
-                return Lexer::Token(tok_extern, word, -2);//to change , uncertain about this result
-            }else{
-                return Lexer::Token(tok_identifier, word, -5);//to change , uncertain about this result(num)
-            }
+                return Lexer::Token(TOK_extern, word);
 
+            }else if( (word == "int") || (word == "string") || (word == "float") || (word == "char") || (word == "double") ){
+                return Lexer::Token(TOK_keyword, word);
+
+            }else if(word == "for") {
+                //cout << "'" << lastChar <<"'" ;
+                while (isspace(lastChar)) {//skipping any whitespaces
+                    charIndex++;
+                    lastChar = inputText[charIndex];
+                }
+                return Lexer::Token(TOK_for, word);
+                if (lastChar == '(') {
+                    cout << "if :" << lastChar << endl;
+                    string cond1 = "", cond2 = "", cond3 = "";
+                    int count = 1;
+                    charIndex++;
+                    lastChar = inputText[charIndex];
+                    //while(lastChar != ')'){
+                    //    getToken();
+                    //}
+
+                } else {
+
+                    cout << "else :" << lastChar << endl;
+                }
+
+                return Lexer::Token(TOK_for, word);
+            }else if(word == "return"){
+                return (Lexer::Token(TOK_return,word));
+            }else{
+                return Lexer::Token(TOK_identifier, word);//to change , uncertain about this result(num)
+            }
         }
 
         if(lastChar == '/'){//for comments
             string comm = "";
             int i =0;
-            bool flag= false, integ=false;
-            do{
-                i++;
-                comm += lastChar;
-                charIndex++;
-                lastChar = inputText[charIndex];;
-                if(i==2) {
-                    if (lastChar == '/') {
+            bool integ=false;
+            //comm += lastChar;
+            charIndex++;
+            lastChar = inputText[charIndex];
+            if(lastChar == '/') {
+                //comm += lastChar;
+                while(1){
+                    charIndex++;
+                    lastChar = inputText[charIndex];
+                    if(lastChar != EOF && lastChar != '\n' && lastChar != '\r'){
                         comm += lastChar;
-                        flag = true;// can be removed, kept if want to do something with comment
-
                     }else{
-                        // only the 1st char was a /
-                        if(isdigit(lastChar)){
-                            integ = true;
-                        }
-                        break;
 
+                        break;
                     }
                 }
-                comm += lastChar;
-            }while(lastChar != EOF && lastChar != '\n' && lastChar != '\r');
-
+            }
             if(integ == true){
                 //value after / was a number .... do something with it (division)
             }
-
-            //cout <<"Returning Comment: " << comm << endl;
-            return Lexer::Token(tok_comment,comm,-6);//uncertain about num for this case
-            //if(lastChar != EOF){
-            //    return getToken();
-            //}
+            return Lexer::Token(TOK_comment,comm);//uncertain about num for this case
         }
 
-        if(lastChar == '+' || '-' ||'*' ||'/'){
+        if((lastChar == '+') || (lastChar == '-') ||(lastChar == '*') ||(lastChar == '/')){
             string oper= "";
+            char check =lastChar;
             oper += lastChar;
             charIndex++;
             lastChar = inputText[charIndex];
-            return (Lexer::Token(tok_arithop,oper,-7));   //not sure about the num return
+            if(check == '+'){
+                if(lastChar == '+'){
+                    oper+=lastChar;
+                    charIndex++;
+                }
+            }else if(check == '-'){
+                if(lastChar == '-'){
+                    oper+=lastChar;
+                    charIndex++;
+                }
+            }
+
+            return (Lexer::Token(TOK_arithop,oper));   //not sure about the num return
         }
-        //charIndex++;
-        //lastChar = inputText[charIndex];
 
+        if((lastChar == '>')||(lastChar == '<')||(lastChar == '=')){
+            string boolop = "";
+            boolop += lastChar;
+            charIndex++;
+            if (inputText[charIndex] == '='){//check for 2nd part for boolean operation if existant ( >= <= ==)
+                boolop += inputText[charIndex];
+                charIndex++;
+                return (Lexer::Token(TOK_bool, boolop));
+            }else{
+                return (Lexer::Token(TOK_bool, boolop));
+            }
+        }
 
+        if((lastChar == '.')||(lastChar == ';')||(lastChar == '(')||(lastChar == ')')||(lastChar == '{')||(lastChar == '}')){
+            string punc ="";
+            punc += lastChar;
+            charIndex++;
+            return (Lexer::Token(TOK_punc,punc));
+        }
+
+        if(charIndex == inputText.length()){
+            return (Lexer::Token());
+        }
     }
+}
+
+string Lexer::Token::toString() {
+    string result = "<";
+    string type;
+    switch (token_type){
+        case -1:
+            type = "End Of File";
+            break;
+        case -2:
+            type = "Extern";
+            break;
+        case -3:
+            type = "Define";
+            break;
+        case -4:
+            type = "Number";
+            break;
+        case -5:
+            type = "Identifier";
+            break;
+        case -6:
+            type = "Comment";
+            break;
+        case -7:
+            type = "Arithmetic Operation";
+            break;
+        case -8:
+            type = "String";
+            break;
+        case -9:
+            type = "KeyWord";
+            break;
+        case -10:
+            type = "Boolean Operation";
+            break;
+        case -11:
+            type = "Punctuator";
+            break;
+        case -12:
+            type = "For Loop";
+            break;
+        case -13:
+            type = "Return";
+            break;
+    }
+    result += type;
+    result += ">";
+    if(id == ""){
+        result += "<";
+        result += to_string(num);
+        result += ">";
+    }else if(num == 0){
+        result += "<";
+        result += id;
+        result += ">";
+    }else{
+        result += "<";
+        result += to_string(num);
+        result += ", ";
+        result += id;
+        result += ">";
+    }
+    return result;
 }
 
 /*

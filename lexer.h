@@ -9,6 +9,7 @@
 #include <string.h>
 #include <fstream>
 #include <iostream>
+//#include <stdio>
 using namespace std;
 
 class Lexer {
@@ -26,16 +27,15 @@ public:
     /*
      * All possible token types and their associated value.
      */
-    enum TOK_Type { tok_eof = -1, tok_extern = -2, tok_def = -3, tok_number = -4, tok_identifier = -5,tok_comment =-6, tok_arithop=-7};
+    enum TOK_Type { TOK_eof = -1, TOK_extern = -2, TOK_def = -3, TOK_number = -4, TOK_identifier = -5,TOK_comment =-6, TOK_arithop=-7,TOK_string =-8, TOK_keyword =-9, TOK_bool =-10, TOK_punc =-11,TOK_for=-12,TOK_return =-13};
 
     struct Token{
         TOK_Type token_type;
         string id;//check what we have to store
         float num;//check what we have to store
 
-
         Token(){
-            token_type = tok_eof;
+            token_type = TOK_eof;
             id = '"';
             num = 0;
         }
@@ -45,6 +45,19 @@ public:
             id = p_id;
             num = p_num;
         }
+        Token(TOK_Type p_type, string p_id){
+            token_type = p_type;
+            id = p_id;
+            num = 0;
+        }
+        Token(TOK_Type p_type, float p_num ){
+            token_type = p_type;
+            id = "";
+            num = p_num;
+        }
+
+        string toString();
+
     };
 
     /*
@@ -68,6 +81,7 @@ public:
          * Get token impemented using Token type
          */
         Token getToken();
+
 
         /*
         * Get token implemented using int
